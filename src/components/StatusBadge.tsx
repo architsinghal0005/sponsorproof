@@ -5,8 +5,8 @@ import { FindingCategory, FindingStatus, Severity } from "@/lib/types";
 export function StatusBadge({ status }: { status: FindingStatus }) {
   if (status === "PASS") {
     return (
-      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30">
-        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
+      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-bold bg-[#EDF5F2] text-[#347C68] border border-[#C2DFD4]">
+        <CheckCircle2 className="w-3.5 h-3.5 text-[#347C68]" />
         PASS
       </span>
     );
@@ -14,16 +14,16 @@ export function StatusBadge({ status }: { status: FindingStatus }) {
 
   if (status === "MISSING") {
     return (
-      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-rose-500/15 text-rose-600 dark:text-rose-400 border border-rose-500/30">
-        <XCircle className="w-3.5 h-3.5 text-rose-500" />
+      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-bold bg-[#FDF2F0] text-[#C53929] border border-[#F5C7C0]">
+        <XCircle className="w-3.5 h-3.5 text-[#C53929]" />
         MISSING
       </span>
     );
   }
 
   return (
-    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30">
-      <AlertTriangle className="w-3.5 h-3.5 text-amber-500" />
+    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-bold bg-[#FEF9EE] text-[#B45309] border border-[#FDE3A7]">
+      <AlertTriangle className="w-3.5 h-3.5 text-[#B45309]" />
       NEEDS REVIEW
     </span>
   );
@@ -32,20 +32,20 @@ export function StatusBadge({ status }: { status: FindingStatus }) {
 export function SeverityBadge({ severity }: { severity: Severity }) {
   if (severity === "CRITICAL") {
     return (
-      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium bg-rose-950/40 text-rose-400 border border-rose-800/50">
+      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-semibold bg-[#FDF2F0] text-[#C53929] border border-[#F5C7C0]">
         Critical
       </span>
     );
   }
   if (severity === "IMPORTANT") {
     return (
-      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium bg-amber-950/40 text-amber-400 border border-amber-800/50">
+      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-semibold bg-[#FEF9EE] text-[#B45309] border border-[#FDE3A7]">
         Important
       </span>
     );
   }
   return (
-    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium bg-slate-800 text-slate-300 border border-slate-700">
+    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium bg-[#FAF8F5] text-[#74736F] border border-[#E5E0D8]">
       Recommended
     </span>
   );
@@ -62,7 +62,7 @@ export function CategoryBadge({ category }: { category: FindingCategory }) {
   };
 
   return (
-    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
+    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium bg-[#FAF8F5] text-[#73536D] border border-[#E5E0D8]">
       {labels[category] || category}
     </span>
   );

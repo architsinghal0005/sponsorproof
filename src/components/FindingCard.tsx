@@ -1,16 +1,15 @@
+"use client";
+
 import React, { useState } from "react";
-import {
-  Finding,
-} from "@/lib/types";
+import { Finding } from "@/lib/types";
 import { CategoryBadge, SeverityBadge, StatusBadge } from "./StatusBadge";
 import {
   Check,
   Copy,
-  Quote,
   ShieldCheck,
   AlertCircle,
   FileText,
-  Sparkles,
+  Wand2,
 } from "lucide-react";
 
 interface FindingCardProps {
@@ -27,27 +26,27 @@ export function FindingCard({ finding }: FindingCardProps) {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  // Border accents
-  const borderClass =
+  // Subtle left border indicator
+  const statusBorder =
     finding.status === "PASS"
-      ? "border-emerald-500/30 hover:border-emerald-500/50"
+      ? "border-l-4 border-l-[#347C68] border-[#E5E0D8]"
       : finding.status === "MISSING"
-      ? "border-rose-500/40 hover:border-rose-500/60"
-      : "border-amber-500/40 hover:border-amber-500/60";
+      ? "border-l-4 border-l-[#C53929] border-[#E5E0D8]"
+      : "border-l-4 border-l-[#B45309] border-[#E5E0D8]";
 
   return (
     <div
-      className={`bg-slate-900/80 border ${borderClass} rounded-2xl p-5 shadow-lg backdrop-blur-sm transition-all duration-200 relative overflow-hidden`}
+      className={`bg-white border ${statusBorder} rounded-xl p-5 shadow-xs transition-all duration-150 relative`}
     >
-      {/* Top Header */}
-      <div className="flex flex-wrap items-center justify-between gap-3 mb-3.5">
-        <div className="flex items-center gap-2">
+      {/* Top Header: Status, Category, Severity & Verification Method */}
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
+        <div className="flex items-center gap-2 flex-wrap">
           <StatusBadge status={finding.status} />
           <CategoryBadge category={finding.category} />
           <SeverityBadge severity={finding.severity} />
         </div>
 
-        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-slate-800/90 text-slate-300 border border-slate-700/60 shadow-sm">
+        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-semibold bg-[#FAF8F5] text-[#252A32] border border-[#E5E0D8]">
           {finding.verificationMethod ||
             (finding.sourceType === "llm"
               ? "AI Semantic Check"
@@ -57,114 +56,125 @@ export function FindingCard({ finding }: FindingCardProps) {
         </span>
       </div>
 
-      {/* Title */}
-      <h4 className="text-base font-bold text-slate-100 mb-2 leading-snug">
+      {/* Finding Title */}
+      <h4 className="text-base font-bold text-[#252A32] mb-1.5 leading-snug">
         {finding.title}
       </h4>
 
       {/* Explanation */}
-      <p className="text-sm text-slate-300 leading-relaxed mb-4">
+      <p className="text-xs sm:text-sm text-[#74736F] leading-relaxed mb-4">
         {finding.explanation}
       </p>
 
       {/* Evidence Quotes Comparison Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3.5 mb-4">
-        {/* Brief Quote Box */}
-        <div className="bg-slate-950/70 border border-slate-800 rounded-xl p-3.5 relative">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3.5 mb-3.5">
+        {/* Brand Brief Requirement Box */}
+        <div className="bg-[#FAF8F5] border border-[#E5E0D8] rounded-xl p-3.5 flex flex-col justify-between">
           <div className="flex items-center justify-between gap-2 mb-2">
-            <span className="text-xs font-semibold text-slate-400 flex items-center gap-1.5">
-              <FileText className="w-3.5 h-3.5 text-indigo-400" />
+            <span className="text-xs font-bold text-[#252A32] flex items-center gap-1.5">
+              <FileText className="w-3.5 h-3.5 text-[#73536D]" />
               Brand Brief Requirement
             </span>
             {finding.briefQuote?.verified ? (
-              <span className="inline-flex items-center gap-1 text-[10px] text-emerald-400 font-medium bg-emerald-950/40 px-2 py-0.5 rounded border border-emerald-800/40">
-                <ShieldCheck className="w-3 h-3 text-emerald-400" />
+              <span className="inline-flex items-center gap-1 text-[10px] text-[#347C68] font-semibold bg-[#EDF5F2] px-2 py-0.5 rounded border border-[#C2DFD4]">
+                <ShieldCheck className="w-3 h-3 text-[#347C68]" />
                 Verified from Brief
               </span>
             ) : finding.briefQuote ? (
-              <span className="inline-flex items-center gap-1 text-[10px] text-amber-400 font-medium bg-amber-950/40 px-2 py-0.5 rounded border border-amber-800/40">
-                <AlertCircle className="w-3 h-3 text-amber-400" />
+              <span className="inline-flex items-center gap-1 text-[10px] text-[#B45309] font-semibold bg-[#FEF9EE] px-2 py-0.5 rounded border border-[#FDE3A7]">
+                <AlertCircle className="w-3 h-3 text-[#B45309]" />
                 Unverified Quote
               </span>
             ) : null}
           </div>
 
           {finding.briefQuote?.text ? (
-            <p className="text-xs text-slate-200 italic border-l-2 border-indigo-500/50 pl-3 py-1 font-mono leading-relaxed">
+            <p className="text-xs text-[#252A32] italic border-l-2 border-[#73536D] pl-3 py-1 font-mono leading-relaxed bg-white rounded-r-md">
               &ldquo;{finding.briefQuote.text}&rdquo;
             </p>
           ) : (
-            <p className="text-xs text-slate-500 italic pl-1">
+            <p className="text-xs text-[#74736F] italic pl-1">
               General campaign requirement or industry regulation
             </p>
           )}
+
+          {finding.briefQuote?.verificationNote && (
+            <span className="text-[10px] text-[#74736F] mt-2 block font-mono">
+              {finding.briefQuote.verificationNote}
+            </span>
+          )}
         </div>
 
-        {/* Content Script Quote Box */}
-        <div className="bg-slate-950/70 border border-slate-800 rounded-xl p-3.5 relative">
+        {/* Content Evidence Box */}
+        <div className="bg-[#FAF8F5] border border-[#E5E0D8] rounded-xl p-3.5 flex flex-col justify-between">
           <div className="flex items-center justify-between gap-2 mb-2">
-            <span className="text-xs font-semibold text-slate-400 flex items-center gap-1.5">
-              <Quote className="w-3.5 h-3.5 text-purple-400" />
+            <span className="text-xs font-bold text-[#252A32] flex items-center gap-1.5">
+              <FileText className="w-3.5 h-3.5 text-[#EA6A50]" />
               Content Draft Evidence
             </span>
             {finding.contentQuote?.verified ? (
-              <span className="inline-flex items-center gap-1 text-[10px] text-emerald-400 font-medium bg-emerald-950/40 px-2 py-0.5 rounded border border-emerald-800/40">
-                <ShieldCheck className="w-3 h-3 text-emerald-400" />
+              <span className="inline-flex items-center gap-1 text-[10px] text-[#347C68] font-semibold bg-[#EDF5F2] px-2 py-0.5 rounded border border-[#C2DFD4]">
+                <ShieldCheck className="w-3 h-3 text-[#347C68]" />
                 Found in Script
               </span>
-            ) : finding.status === "MISSING" ? (
-              <span className="inline-flex items-center gap-1 text-[10px] text-rose-400 font-medium bg-rose-950/40 px-2 py-0.5 rounded border border-rose-800/40">
-                <AlertCircle className="w-3 h-3 text-rose-400" />
+            ) : (
+              <span className="inline-flex items-center gap-1 text-[10px] text-[#C53929] font-semibold bg-[#FDF2F0] px-2 py-0.5 rounded border border-[#F5C7C0]">
+                <AlertCircle className="w-3 h-3 text-[#C53929]" />
                 Missing from Script
               </span>
-            ) : finding.contentQuote ? (
-              <span className="inline-flex items-center gap-1 text-[10px] text-amber-400 font-medium bg-amber-950/40 px-2 py-0.5 rounded border border-amber-800/40">
-                <AlertCircle className="w-3 h-3 text-amber-400" />
-                Unverified in Script
-              </span>
-            ) : null}
+            )}
           </div>
 
           {finding.contentQuote?.text ? (
-            <p className="text-xs text-slate-200 italic border-l-2 border-purple-500/50 pl-3 py-1 font-mono leading-relaxed">
+            <p className="text-xs text-[#252A32] italic border-l-2 border-[#EA6A50] pl-3 py-1 font-mono leading-relaxed bg-white rounded-r-md">
               &ldquo;{finding.contentQuote.text}&rdquo;
             </p>
           ) : (
-            <p className="text-xs text-rose-400/90 italic pl-1 font-medium">
+            <p className="text-xs text-[#C53929] italic pl-1">
               No matching mention was found in your draft text.
             </p>
+          )}
+
+          {finding.contentQuote?.verificationNote && (
+            <span className="text-[10px] text-[#74736F] mt-2 block font-mono">
+              {finding.contentQuote.verificationNote}
+            </span>
           )}
         </div>
       </div>
 
-      {/* Suggested Fix (if present) */}
+      {/* Suggested Copy Fix Banner */}
       {finding.suggestedFix && (
-        <div className="bg-gradient-to-r from-indigo-950/40 to-purple-950/30 border border-indigo-800/40 rounded-xl p-3.5 mt-3">
-          <div className="flex items-center justify-between gap-2 mb-1.5">
-            <span className="text-xs font-semibold text-indigo-300 flex items-center gap-1.5">
-              <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
-              Suggested Copy Fix
-            </span>
-            <button
-              onClick={handleCopyFix}
-              className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white transition-colors cursor-pointer"
-            >
-              {copied ? (
-                <>
-                  <Check className="w-3 h-3 text-emerald-300" />
-                  Copied!
-                </>
-              ) : (
-                <>
-                  <Copy className="w-3 h-3" />
-                  Copy Fix
-                </>
-              )}
-            </button>
+        <div className="bg-[#FAF8F5] border border-[#E5E0D8] rounded-xl p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="flex items-start gap-2.5">
+            <Wand2 className="w-4 h-4 text-[#EA6A50] shrink-0 mt-0.5" />
+            <div>
+              <span className="text-[11px] font-bold text-[#252A32] uppercase tracking-wider block">
+                Suggested Copy Fix
+              </span>
+              <p className="text-xs font-mono text-[#252A32] leading-snug mt-0.5">
+                {finding.suggestedFix}
+              </p>
+            </div>
           </div>
-          <p className="text-xs text-slate-200 font-mono bg-slate-950/60 p-2.5 rounded-lg border border-slate-800 leading-relaxed select-all">
-            {finding.suggestedFix}
-          </p>
+
+          <button
+            onClick={handleCopyFix}
+            className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-[#EA6A50] hover:bg-[#D8583E] text-white shadow-xs transition-colors shrink-0 cursor-pointer active:scale-95"
+            title="Copy fix to clipboard"
+          >
+            {copied ? (
+              <>
+                <Check className="w-3.5 h-3.5" />
+                <span>Copied!</span>
+              </>
+            ) : (
+              <>
+                <Copy className="w-3.5 h-3.5" />
+                <span>Copy Fix</span>
+              </>
+            )}
+          </button>
         </div>
       )}
     </div>

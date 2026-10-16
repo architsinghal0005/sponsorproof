@@ -59,13 +59,14 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    // Auto mode: attempt Ollama with Gemma 3:4b
+    // Auto mode: attempt Ollama with configured Gemma 3 model
     try {
       const report = await analyzeWithOllama(
         brief,
         content,
         deliverableType as DeliverableType,
-        campaignName
+        campaignName,
+        req.signal
       );
       return NextResponse.json({
         success: true,
@@ -93,21 +94,28 @@ export async function POST(req: NextRequest) {
       }
 
       if (ollamaErr instanceof OllamaConnectionError) {
+        const isTimeout = ollamaErr.message.toLowerCase().includes("timed out");
         return NextResponse.json(
           {
             success: false,
-            errorType: "OLLAMA_UNREACHABLE",
+            errorType: isTimeout ? "TIMEOUT" : "OLLAMA_UNREACHABLE",
             error: ollamaErr.message,
             baseUrl,
             model,
-            helpInstructions: [
-              `Ensure Ollama is installed from https://ollama.com`,
-              `Start Ollama with: ollama serve`,
-              `Make sure model is available: ollama run ${model}`,
-              `Or use 'Run Deterministic Audit' for instant code/hashtag/disclosure checks.`,
-            ],
+            helpInstructions: isTimeout
+              ? [
+                  `Model '${model}' took longer than expected on local CPU/GPU hardware.`,
+                  "You can increase OLLAMA_TIMEOUT_MS in .env.local (e.g., 240000 for 4 minutes).",
+                  "Or use 'Run Deterministic Audit' for instant zero-latency checks of codes, hashtags, and disclosures.",
+                ]
+              : [
+                  `Ensure Ollama is installed from https://ollama.com`,
+                  `Start Ollama with: ollama serve`,
+                  `Make sure model is available: ollama run ${model}`,
+                  `Or use 'Run Deterministic Audit' for instant code/hashtag/disclosure checks.`,
+                ],
           },
-          { status: 503 }
+          { status: isTimeout ? 504 : 503 }
         );
       }
 

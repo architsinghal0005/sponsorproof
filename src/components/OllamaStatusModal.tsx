@@ -43,184 +43,169 @@ export function OllamaStatusModal({
   const isModelReady = status?.targetModelInstalled;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="bg-slate-900 border border-slate-700/80 rounded-2xl max-w-xl w-full p-6 shadow-2xl relative overflow-hidden text-slate-100">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs animate-in fade-in duration-150">
+      <div className="bg-white border border-[#E5E0D8] rounded-2xl max-w-xl w-full p-6 shadow-2xl relative overflow-hidden text-[#252A32]">
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-5 right-5 text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800 transition-colors cursor-pointer"
+          className="absolute top-5 right-5 text-[#74736F] hover:text-[#252A32] p-1.5 rounded-lg hover:bg-[#FAF8F5] transition-colors cursor-pointer"
         >
           <X className="w-5 h-5" />
         </button>
 
         {/* Header */}
         <div className="flex items-center gap-3 mb-5">
-          <div className="w-10 h-10 rounded-xl bg-indigo-500/15 border border-indigo-500/30 flex items-center justify-center text-indigo-400">
+          <div className="w-10 h-10 rounded-xl bg-[#FAF8F5] border border-[#E5E0D8] flex items-center justify-center text-[#EA6A50]">
             <Cpu className="w-5 h-5" />
           </div>
           <div>
-            <h3 className="text-lg font-bold text-white">
-              Ollama & Gemma 3 Integration
+            <h3 className="text-lg font-bold text-[#252A32]">
+              Ollama & Gemma 3 Diagnostics
             </h3>
-            <p className="text-xs text-slate-400">
-              Server-side local LLM connection status & commands
+            <p className="text-xs text-[#74736F]">
+              Local open-weight LLM connection & status
             </p>
           </div>
         </div>
 
         {/* Current Connection Diagnostic Card */}
-        <div className="bg-slate-950 border border-slate-800 rounded-xl p-4 mb-5 space-y-2.5">
+        <div className="bg-[#FAF8F5] border border-[#E5E0D8] rounded-xl p-4 mb-5 space-y-2.5">
           <div className="flex items-center justify-between text-xs">
-            <span className="text-slate-400 flex items-center gap-1.5 font-medium">
-              <Server className="w-3.5 h-3.5 text-indigo-400" />
+            <span className="text-[#74736F] flex items-center gap-1.5 font-medium">
+              <Server className="w-3.5 h-3.5 text-[#73536D]" />
               Ollama Base URL:
             </span>
-            <code className="text-indigo-300 font-mono bg-indigo-950/50 px-2 py-0.5 rounded border border-indigo-800/40">
+            <code className="text-[#252A32] font-mono bg-white px-2 py-0.5 rounded border border-[#E5E0D8]">
               {status?.baseUrl || "http://127.0.0.1:11434"}
             </code>
           </div>
 
           <div className="flex items-center justify-between text-xs">
-            <span className="text-slate-400 flex items-center gap-1.5 font-medium">
-              <Cpu className="w-3.5 h-3.5 text-purple-400" />
-              Required Model:
+            <span className="text-[#74736F] flex items-center gap-1.5 font-medium">
+              <Cpu className="w-3.5 h-3.5 text-[#EA6A50]" />
+              Configured Model:
             </span>
-            <code className="text-purple-300 font-mono bg-purple-950/50 px-2 py-0.5 rounded border border-purple-800/40">
+            <code className="text-[#252A32] font-mono bg-white px-2 py-0.5 rounded border border-[#E5E0D8]">
               {status?.targetModel || "gemma3:1b"}
             </code>
           </div>
 
-          <div className="flex items-center justify-between text-xs pt-1 border-t border-slate-800/80">
-            <span className="text-slate-400 font-medium">Connection State:</span>
+          <div className="flex items-center justify-between text-xs pt-1.5 border-t border-[#E5E0D8]">
+            <span className="text-[#74736F] font-medium">Connection State:</span>
             {isOnline ? (
-              <span className="inline-flex items-center gap-1 text-emerald-400 font-bold">
-                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+              <span className="inline-flex items-center gap-1 text-[#347C68] font-bold">
+                <CheckCircle2 className="w-3.5 h-3.5 text-[#347C68]" />
                 Online & Reachable
               </span>
             ) : (
-              <span className="inline-flex items-center gap-1 text-rose-400 font-bold">
-                <XCircle className="w-3.5 h-3.5 text-rose-400" />
-                Offline / Unreachable
+              <span className="inline-flex items-center gap-1 text-[#C53929] font-bold">
+                <XCircle className="w-3.5 h-3.5 text-[#C53929]" />
+                Unreachable
               </span>
             )}
           </div>
 
-          <div className="flex items-center justify-between text-xs">
-            <span className="text-slate-400 font-medium">Model Installed:</span>
+          <div className="flex items-center justify-between text-xs pt-1 border-t border-[#E5E0D8]">
+            <span className="text-[#74736F] font-medium">Model Installed:</span>
             {isModelReady ? (
-              <span className="inline-flex items-center gap-1 text-emerald-400 font-bold">
-                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
-                {status?.targetModel} is ready
+              <span className="inline-flex items-center gap-1 text-[#347C68] font-bold">
+                <CheckCircle2 className="w-3.5 h-3.5 text-[#347C68]" />
+                {status?.targetModel} Pulled & Ready
+              </span>
+            ) : isOnline ? (
+              <span className="inline-flex items-center gap-1 text-[#B45309] font-bold">
+                <XCircle className="w-3.5 h-3.5 text-[#B45309]" />
+                Model Not Downloaded
               </span>
             ) : (
-              <span className="inline-flex items-center gap-1 text-amber-400 font-bold">
-                <XCircle className="w-3.5 h-3.5 text-amber-400" />
-                Not installed yet
-              </span>
+              <span className="text-[#74736F]">Awaiting Server</span>
             )}
           </div>
-
-          {status?.installedModels && status.installedModels.length > 0 && (
-            <div className="text-xs pt-1 border-t border-slate-800/80">
-              <span className="text-slate-400 block mb-1">Installed Models:</span>
-              <div className="flex flex-wrap gap-1.5">
-                {status.installedModels.map((m) => (
-                  <span
-                    key={m}
-                    className="px-2 py-0.5 rounded text-[11px] font-mono bg-slate-900 text-slate-300 border border-slate-800"
-                  >
-                    {m}
-                  </span>
-                ))}
-              </div>
-            </div>
-          )}
         </div>
 
-        {/* Step-by-Step Setup Guide */}
-        <div className="space-y-3 mb-6">
-          <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400">
-            Quick Terminal Setup
+        {/* Setup Instructions */}
+        <div className="space-y-3 mb-5">
+          <h4 className="text-xs font-bold uppercase tracking-wider text-[#74736F]">
+            Quick Setup Commands (Windows PowerShell / Terminal)
           </h4>
 
           {/* Step 1 */}
-          <div className="bg-slate-950/70 border border-slate-800/80 rounded-xl p-3 flex items-center justify-between gap-3">
-            <div>
-              <p className="text-xs font-semibold text-slate-200">
-                1. Start the Ollama Service
-              </p>
-              <code className="text-xs font-mono text-indigo-400">
-                ollama serve
-              </code>
+          <div className="bg-[#FAF8F5] border border-[#E5E0D8] rounded-xl p-3 flex items-center justify-between gap-2">
+            <div className="text-xs">
+              <span className="text-[#74736F] block text-[10px]">1. Start the daemon</span>
+              <code className="text-[#252A32] font-mono font-semibold">ollama serve</code>
             </div>
             <button
               onClick={() => copyToClipboard("ollama serve", 1)}
-              className="p-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-400 hover:text-white transition-colors cursor-pointer"
-              title="Copy command"
+              className="p-1.5 rounded-lg bg-white border border-[#E5E0D8] hover:border-[#D1CBC0] text-[#74736F] hover:text-[#252A32] transition-colors cursor-pointer"
             >
-              {copiedIndex === 1 ? (
-                <Check className="w-4 h-4 text-emerald-400" />
-              ) : (
-                <Copy className="w-4 h-4" />
-              )}
+              {copiedIndex === 1 ? <Check className="w-3.5 h-3.5 text-[#347C68]" /> : <Copy className="w-3.5 h-3.5" />}
             </button>
           </div>
 
           {/* Step 2 */}
-          <div className="bg-slate-950/70 border border-slate-800/80 rounded-xl p-3 flex items-center justify-between gap-3">
-            <div>
-              <p className="text-xs font-semibold text-slate-200">
-                2. Pull & Run {status?.targetModel || "gemma3:1b"}
-              </p>
-              <code className="text-xs font-mono text-purple-400">
+          <div className="bg-[#FAF8F5] border border-[#E5E0D8] rounded-xl p-3 flex items-center justify-between gap-2">
+            <div className="text-xs">
+              <span className="text-[#74736F] block text-[10px]">2. Pull Gemma 3</span>
+              <code className="text-[#252A32] font-mono font-semibold">
                 ollama run {status?.targetModel || "gemma3:1b"}
               </code>
             </div>
             <button
-              onClick={() => copyToClipboard(`ollama run ${status?.targetModel || "gemma3:1b"}`, 2)}
-              className="p-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-400 hover:text-white transition-colors cursor-pointer"
-              title="Copy command"
+              onClick={() =>
+                copyToClipboard(
+                  `ollama run ${status?.targetModel || "gemma3:1b"}`,
+                  2
+                )
+              }
+              className="p-1.5 rounded-lg bg-white border border-[#E5E0D8] hover:border-[#D1CBC0] text-[#74736F] hover:text-[#252A32] transition-colors cursor-pointer"
             >
-              {copiedIndex === 2 ? (
-                <Check className="w-4 h-4 text-emerald-400" />
-              ) : (
-                <Copy className="w-4 h-4" />
-              )}
+              {copiedIndex === 2 ? <Check className="w-3.5 h-3.5 text-[#347C68]" /> : <Copy className="w-3.5 h-3.5" />}
             </button>
           </div>
         </div>
 
-        {/* Actions Footer */}
-        <div className="flex items-center justify-between gap-3 pt-4 border-t border-slate-800">
+        {/* Installed Models List */}
+        {status?.installedModels && status.installedModels.length > 0 && (
+          <div className="mb-5 bg-[#FAF8F5] border border-[#E5E0D8] rounded-xl p-3 text-xs">
+            <span className="font-bold text-[#74736F] text-[10px] uppercase block mb-1.5">
+              Locally Installed Models:
+            </span>
+            <div className="flex flex-wrap gap-1.5">
+              {status.installedModels.map((m, idx) => (
+                <span
+                  key={idx}
+                  className="px-2 py-0.5 rounded bg-white border border-[#E5E0D8] text-[#252A32] font-mono text-[11px]"
+                >
+                  {m}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Footer Actions */}
+        <div className="flex items-center justify-between pt-2 border-t border-[#E5E0D8]">
           <a
-            href="https://ollama.com/download"
+            href="https://ollama.com"
             target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 text-xs text-indigo-400 hover:text-indigo-300 font-medium transition-colors"
+            rel="noreferrer"
+            className="inline-flex items-center gap-1 text-xs text-[#73536D] hover:text-[#252A32] font-medium"
           >
-            Download Ollama
-            <ExternalLink className="w-3.5 h-3.5" />
+            <span>Ollama Documentation</span>
+            <ExternalLink className="w-3 h-3" />
           </a>
 
-          <div className="flex items-center gap-2">
-            <button
-              onClick={onRefresh}
-              disabled={isRefreshing}
-              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-750 text-slate-200 text-xs font-medium border border-slate-700 transition-colors disabled:opacity-50 cursor-pointer"
-            >
-              <RefreshCw
-                className={`w-3.5 h-3.5 ${isRefreshing ? "animate-spin" : ""}`}
-              />
-              {isRefreshing ? "Testing..." : "Test Connection"}
-            </button>
-
-            <button
-              onClick={onClose}
-              className="px-4 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold transition-colors cursor-pointer"
-            >
-              Done
-            </button>
-          </div>
+          <button
+            onClick={onRefresh}
+            disabled={isRefreshing}
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold bg-[#EA6A50] hover:bg-[#D8583E] text-white shadow-xs transition-colors cursor-pointer disabled:opacity-50"
+          >
+            <RefreshCw
+              className={`w-3.5 h-3.5 ${isRefreshing ? "animate-spin" : ""}`}
+            />
+            {isRefreshing ? "Checking..." : "Re-test Connection"}
+          </button>
         </div>
       </div>
     </div>

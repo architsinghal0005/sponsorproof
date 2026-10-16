@@ -70,12 +70,12 @@ export function ExampleSelector({ onSelectExample }: ExampleSelectorProps) {
         onClick={() => setIsOpen(!isOpen)}
         aria-expanded={isOpen}
         aria-haspopup="dialog"
-        className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold bg-gradient-to-r from-indigo-600/20 to-purple-600/20 hover:from-indigo-600/30 hover:to-purple-600/30 text-indigo-200 border border-indigo-500/30 transition-all cursor-pointer shadow-sm active:scale-[0.98]"
+        className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-semibold bg-white hover:bg-[#FAF8F5] text-[#252A32] border border-[#E5E0D8] hover:border-[#D1CBC0] transition-all cursor-pointer shadow-xs active:scale-[0.98]"
       >
-        <FolderOpen className="w-4 h-4 text-indigo-400" />
+        <FolderOpen className="w-3.5 h-3.5 text-[#EA6A50]" />
         <span>Load Example Campaign</span>
         <ChevronDown
-          className={`w-3.5 h-3.5 text-indigo-400 transition-transform duration-200 ${
+          className={`w-3.5 h-3.5 text-[#74736F] transition-transform duration-200 ${
             isOpen ? "rotate-180" : ""
           }`}
         />
@@ -85,14 +85,13 @@ export function ExampleSelector({ onSelectExample }: ExampleSelectorProps) {
         <div
           role="dialog"
           aria-label="Select Example Campaign"
-          className="absolute right-0 mt-2 w-[calc(100vw-2.5rem)] sm:w-96 max-w-sm sm:max-w-md max-h-[60vh] overflow-y-auto rounded-2xl bg-slate-900/95 backdrop-blur-xl border border-slate-700/90 shadow-2xl p-3 z-50 overscroll-contain animate-in fade-in zoom-in-95 duration-150"
-          style={{ scrollbarWidth: "thin", scrollbarColor: "#475569 transparent" }}
+          className="absolute right-0 mt-2 w-[calc(100vw-2.5rem)] sm:w-96 max-w-sm sm:max-w-md max-h-[60vh] overflow-y-auto rounded-2xl bg-white border border-[#E5E0D8] shadow-xl p-3 z-50 overscroll-contain"
         >
-          <div className="sticky -top-3 -mx-3 px-3 py-2 bg-slate-900/95 backdrop-blur-md border-b border-slate-800/80 mb-2 flex items-center justify-between z-10">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+          <div className="sticky -top-3 -mx-3 px-3 py-2 bg-white/95 backdrop-blur-md border-b border-[#E5E0D8] mb-2 flex items-center justify-between z-10">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-[#74736F]">
               Select Campaign Brief
             </span>
-            <span className="text-[10px] text-slate-500 font-mono">
+            <span className="text-[10px] text-[#74736F] font-mono">
               {CAMPAIGN_EXAMPLES.length} Options
             </span>
           </div>
@@ -107,22 +106,22 @@ export function ExampleSelector({ onSelectExample }: ExampleSelectorProps) {
                   onClick={() => setSelectedCampaign(ex)}
                   className={`w-full text-left px-3 py-2.5 rounded-xl text-xs transition-all cursor-pointer flex flex-col gap-0.5 ${
                     isCurrent
-                      ? "bg-indigo-600/25 border border-indigo-500/50 text-white shadow-inner"
-                      : "hover:bg-slate-800/80 text-slate-300 border border-transparent"
+                      ? "bg-[#FAF8F5] border border-[#EA6A50]/40 text-[#252A32] shadow-xs"
+                      : "hover:bg-[#F5F2EC] text-[#74736F] hover:text-[#252A32] border border-transparent"
                   }`}
                 >
                   <div className="flex items-center justify-between">
-                    <span className="font-bold flex items-center gap-1.5">
+                    <span className="font-bold flex items-center gap-1.5 text-[#252A32]">
                       {isCurrent && (
-                        <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-pulse" />
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#EA6A50]" />
                       )}
                       {ex.brand}
                     </span>
-                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-800 text-slate-400 font-medium border border-slate-700/50">
+                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#F5F2EC] text-[#74736F] font-medium border border-[#E5E0D8]">
                       {ex.category}
                     </span>
                   </div>
-                  <span className="text-[11px] text-slate-400 truncate">
+                  <span className="text-[11px] text-[#74736F] truncate">
                     {ex.name}
                   </span>
                 </button>
@@ -131,23 +130,23 @@ export function ExampleSelector({ onSelectExample }: ExampleSelectorProps) {
           </div>
 
           {/* Draft Choice for Selected Campaign */}
-          <div className="sticky -bottom-3 -mx-3 px-3 py-2.5 bg-slate-900/95 backdrop-blur-md border-t border-slate-800/90 z-10">
-            <div className="text-[11px] font-bold text-slate-300 mb-2">
-              Choose Test Content for <span className="text-indigo-400 font-semibold">{selectedCampaign.brand}</span>:
+          <div className="sticky -bottom-3 -mx-3 px-3 py-2.5 bg-white/95 backdrop-blur-md border-t border-[#E5E0D8] z-10">
+            <div className="text-[11px] font-bold text-[#252A32] mb-2">
+              Choose Test Content for <span className="text-[#EA6A50] font-semibold">{selectedCampaign.brand}</span>:
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               <button
                 type="button"
                 onClick={() => handleLoadDraft(true)}
-                className="flex items-center gap-2 p-2.5 rounded-xl bg-emerald-950/40 hover:bg-emerald-900/60 border border-emerald-800/60 hover:border-emerald-600 text-left transition-all cursor-pointer group active:scale-[0.98]"
+                className="flex items-center gap-2 p-2.5 rounded-xl bg-[#EDF5F2] hover:bg-[#E2F0EA] border border-[#C2DFD4] text-left transition-all cursor-pointer group active:scale-[0.98]"
               >
-                <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 group-hover:scale-110 transition-transform" />
+                <CheckCircle2 className="w-4 h-4 text-[#347C68] shrink-0" />
                 <div>
-                  <div className="text-xs font-bold text-emerald-300">
+                  <div className="text-xs font-bold text-[#347C68]">
                     Compliant Draft
                   </div>
-                  <div className="text-[10px] text-emerald-400/80 leading-tight">
+                  <div className="text-[10px] text-[#347C68]/80 leading-tight">
                     Fulfills brief (Pass)
                   </div>
                 </div>
@@ -156,14 +155,14 @@ export function ExampleSelector({ onSelectExample }: ExampleSelectorProps) {
               <button
                 type="button"
                 onClick={() => handleLoadDraft(false)}
-                className="flex items-center gap-2 p-2.5 rounded-xl bg-rose-950/40 hover:bg-rose-900/60 border border-rose-800/60 hover:border-rose-600 text-left transition-all cursor-pointer group active:scale-[0.98]"
+                className="flex items-center gap-2 p-2.5 rounded-xl bg-[#FDF2F0] hover:bg-[#FBE6E3] border border-[#F5C7C0] text-left transition-all cursor-pointer group active:scale-[0.98]"
               >
-                <AlertTriangle className="w-4 h-4 text-rose-400 shrink-0 group-hover:scale-110 transition-transform" />
+                <AlertTriangle className="w-4 h-4 text-[#C53929] shrink-0" />
                 <div>
-                  <div className="text-xs font-bold text-rose-300">
+                  <div className="text-xs font-bold text-[#C53929]">
                     Flawed Draft
                   </div>
-                  <div className="text-[10px] text-rose-400/80 leading-tight">
+                  <div className="text-[10px] text-[#C53929]/80 leading-tight">
                     Shows missing codes
                   </div>
                 </div>

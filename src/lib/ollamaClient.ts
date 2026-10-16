@@ -34,9 +34,16 @@ export class OllamaModelNotFoundError extends Error {
 }
 
 export function getOllamaConfig() {
+  const parsedTimeout = parseInt(
+    process.env.OLLAMA_TIMEOUT_MS || "200000",
+    10
+  );
+  const timeoutMs =
+    isNaN(parsedTimeout) || parsedTimeout <= 0 ? 200000 : parsedTimeout;
   return {
     baseUrl: process.env.OLLAMA_BASE_URL || "http://127.0.0.1:11434",
     model: process.env.OLLAMA_MODEL || "gemma3:1b",
+    timeoutMs,
   };
 }
 
@@ -153,10 +160,11 @@ export async function analyzeWithOllama(
   brief: string,
   content: string,
   deliverableType: DeliverableType = "YOUTUBE_INTEGRATION",
-  campaignName: string = "Sponsored Campaign"
+  campaignName: string = "Sponsored Campaign",
+  externalSignal?: AbortSignal
 ): Promise<CampaignReport> {
   const startTime = Date.now();
-  const { baseUrl, model } = getOllamaConfig();
+  const { baseUrl, model, timeoutMs } = getOllamaConfig();
 
   // First run deterministic analysis for ground-truth facts
   const { metrics, findings: deterministicFindings } = runDeterministicAnalysis(
@@ -172,48 +180,47 @@ export async function analyzeWithOllama(
 - Prohibited Terms Found: ${metrics.prohibitedTermsFound.map((p) => p.term).join(", ") || "None"}
 `.trim();
 
-  const systemPrompt = `You are SponsorProof AI, a strict, evidence-based compliance auditor for sponsored creator content.
-Your task is to compare the brand brief with the creator's draft content to ensure contract fulfillment and brand safety.
+  const systemPrompt = `You are SponsorProof AI, a strict compliance auditor for sponsored creator campaigns.
+Your task is to evaluate SEMANTIC requirements: mandatory talking points, product benefit claims, prohibited claims context, and call-to-action intent.
+(Literal promo codes, exact hashtags, URLs, and FTC disclosures are already verified deterministically).
 
-Output ONLY a single valid JSON object adhering to this exact schema:
+Output ONLY a single valid JSON object adhering strictly to this schema:
 {
-  "summary": "2-3 sentence executive audit summary of campaign readiness.",
+  "summary": "2-sentence executive summary of semantic contract fulfillment.",
   "findings": [
     {
-      "title": "Concise title describing requirement",
+      "title": "Concise requirement title",
       "category": "MANDATORY_TALKING_POINTS",
       "status": "PASS",
       "severity": "IMPORTANT",
-      "briefQuote": "Verbatim quote from the brand brief, or null",
-      "contentQuote": "Verbatim quote from creator content, or null",
-      "explanation": "Clear explanation of compliance or deficiency",
-      "suggestedFix": "Copy-paste sentence to fix the issue if MISSING or NEEDS_REVIEW, or null if PASS"
+      "briefQuote": "Short verbatim excerpt from brand brief, or null",
+      "contentQuote": "Short verbatim excerpt from creator draft, or null",
+      "explanation": "Concise 1-2 sentence explanation of compliance or gap",
+      "suggestedFix": "Single correction sentence if MISSING or NEEDS_REVIEW, or null if PASS"
     }
   ]
 }
 
 ALLOWED VALUES FOR "category":
-- "MANDATORY_TALKING_POINTS" (for product features, benefits, security points)
-- "PROMO_AND_LINKS" (for promo codes, discounts, links, hashtags)
-- "DISCLOSURES" (for sponsorship/commercial disclosure statements)
-- "PROHIBITED_CONTENT" (for forbidden claims, competitor mentions)
-- "CALL_TO_ACTION" (for CTA directing viewers to click/buy)
-- "TONE_AND_SPECS" (for video length, tone, guidelines)
+- "MANDATORY_TALKING_POINTS" (product features, key benefits, technical claims)
+- "PROHIBITED_CONTENT" (forbidden claims, competitor mentions)
+- "CALL_TO_ACTION" (viewer instructions to click, visit, or buy)
+- "TONE_AND_SPECS" (pacing, tone, style rules)
 
 ALLOWED VALUES FOR "status": "PASS", "MISSING", "NEEDS_REVIEW"
 ALLOWED VALUES FOR "severity": "CRITICAL", "IMPORTANT", "RECOMMENDED"
 
-STRICT EVIDENCE RULES:
-1. NEVER fabricate or invent evidence quotations.
-2. "briefQuote" and "contentQuote" MUST be pure verbatim text excerpts ONLY. Do NOT add preamble words like "The creator said..." inside the quote fields. Put all commentary in "explanation".
+STRICT RULES:
+1. Provide between 3 and 6 key semantic findings. Do NOT duplicate exact promo code, hashtag, or disclosure checks.
+2. "briefQuote" and "contentQuote" MUST be short exact verbatim text from the inputs, or null. NEVER fabricate quotes.
 3. If a requirement is missing from creator content, "contentQuote" MUST be null.
 4. If a claim is ambiguous, partial, or unverified, mark status as "NEEDS_REVIEW".
-5. Return raw JSON only with no surrounding conversation.`;
+5. Keep explanations and fixes concise. Return raw JSON only with no surrounding text or commentary.`;
 
   const userPrompt = `DELIVERABLE FORMAT: ${deliverableType}
 CAMPAIGN: ${campaignName}
 
-PRE-CALCULATED LITERAL CHECKS:
+PRE-CHECKED LITERAL FACTS:
 ${deterministicSummary}
 
 <brand_brief>
@@ -224,10 +231,23 @@ ${brief}
 ${content}
 </creator_content>
 
-Analyze whether the creator fulfilled all mandatory talking points, key benefits, promo codes, hashtags, disclosures, and calls to action. Return JSON only.`;
+Audit the semantic talking points, benefit claims, and call-to-action against the brand brief. Return valid JSON only.`;
 
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 90000); // 90s max for local LLM
+  const timeoutId = setTimeout(() => {
+    controller.abort(new Error(`TIMEOUT_${timeoutMs}`));
+  }, timeoutMs);
+
+  const onExternalAbort = () => {
+    controller.abort(new Error("CLIENT_ABORTED"));
+  };
+  if (externalSignal) {
+    if (externalSignal.aborted) {
+      clearTimeout(timeoutId);
+      throw new Error("Analysis was cancelled by user.");
+    }
+    externalSignal.addEventListener("abort", onExternalAbort, { once: true });
+  }
 
   let rawResponseBody = "";
 
@@ -247,13 +267,14 @@ Analyze whether the creator fulfilled all mandatory talking points, key benefits
         format: "json",
         options: {
           temperature: 0.1,
-          num_predict: 2048,
+          num_predict: 1024,
         },
+        keep_alive: "10m",
       }),
       signal: controller.signal,
     });
 
-    clearTimeout(timeout);
+    clearTimeout(timeoutId);
 
     if (!response.ok) {
       if (response.status === 404) {
@@ -271,24 +292,42 @@ Analyze whether the creator fulfilled all mandatory talking points, key benefits
     const data = await response.json();
     rawResponseBody = data.message?.content || "";
   } catch (err: unknown) {
-    clearTimeout(timeout);
+    clearTimeout(timeoutId);
     if (
       err instanceof OllamaConnectionError ||
       err instanceof OllamaModelNotFoundError
     ) {
       throw err;
     }
+
+    if (externalSignal?.aborted) {
+      throw new Error("Analysis was cancelled by user.");
+    }
+
     const message = err instanceof Error ? err.message : String(err);
-    if (message.includes("aborted")) {
+    const isTimeout =
+      message.includes("TIMEOUT_") ||
+      controller.signal.aborted ||
+      message.toLowerCase().includes("aborted") ||
+      message.toLowerCase().includes("timeout");
+
+    if (isTimeout) {
+      const seconds = Math.round(timeoutMs / 1000);
       throw new OllamaConnectionError(
-        `Ollama query timed out after 90 seconds on ${baseUrl}. Local model '${model}' may be busy or still loading.`,
+        `Ollama query timed out after ${seconds} seconds on ${baseUrl}. Local model '${model}' was still generating. You can increase OLLAMA_TIMEOUT_MS in .env.local or run the instant deterministic check.`,
         baseUrl
       );
     }
+
     throw new OllamaConnectionError(
       `Cannot connect to Ollama at ${baseUrl}. Ensure Ollama is running ('ollama serve'). Error: ${message}`,
       baseUrl
     );
+  } finally {
+    clearTimeout(timeoutId);
+    if (externalSignal) {
+      externalSignal.removeEventListener("abort", onExternalAbort);
+    }
   }
 
   // Parse and validate LLM output

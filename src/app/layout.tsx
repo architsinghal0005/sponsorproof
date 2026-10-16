@@ -13,9 +13,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "SponsorProof | Evidence-Based Sponsored Content Verification",
+  title: "SponsorProof — Creator Campaign Studio",
   description:
-    "Compare brand briefs with creator scripts and captions. Verify exact promo codes, required talking points, FTC disclosures, and prohibited claims using Gemma 3 and deterministic matching.",
+    "Every deliverable. Every requirement. Ready for review. Evidence-based compliance and brand brief audit tool for creators, editors, and marketing teams.",
 };
 
 export default function RootLayout({
@@ -26,9 +26,11 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased dark`}
+      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-slate-950 text-slate-100">{children}</body>
+      <body className="min-h-full flex flex-col bg-[#F5F2EC] text-[#252A32] selection:bg-[#EA6A50]/20 selection:text-[#252A32]">
+        {children}
+      </body>
     </html>
   );
 }
